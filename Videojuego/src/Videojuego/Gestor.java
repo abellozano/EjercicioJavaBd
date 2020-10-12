@@ -44,7 +44,7 @@ public class Gestor {
 			numpj = 0;
 			nummision = 0;
 			numzona = 0;
-			leerDeFichero();
+			//leerDeFichero();
 			
 		}
 		
@@ -83,6 +83,7 @@ public class Gestor {
 				System.out.println("Opcion 22: Guardar en fichero");
 				System.out.println("Opcion 23: Leer fichero");
 				System.out.println("Opcion 24: Leer de la base de datos");
+				System.out.println("Insertar en la base de datos");
 				System.out.println("Opcion 0: Salir");
 				opcion= teclado.nextInt();
 				teclado.nextLine();
@@ -159,7 +160,10 @@ public class Gestor {
 						leerDeFichero();
 						break;
 					case 24:
-						InsertarBD();
+						LeerBD();
+						break;
+					case 25:
+						Insertar();
 						break;
 					case 0:
 						System.out.println("Saliendo...");
@@ -308,7 +312,7 @@ public class Gestor {
 			}
 			
 		}
-		public void LeerDeBaseDatos() {
+		public void Insertar() {
 			try {
 				//Creamos la conexión con la base de datos
 				Connection conexion;
@@ -327,15 +331,35 @@ public class Gestor {
 	            conexion.setAutoCommit(true);
 	            
 	            // Inserto un personaje
-	           // SQL = "INSERT INTO personaje VALUES(null, ?, ?, ?, ?)";
+	            
 
-	            // Conexion sentencia = conexion.prepareStatement(SQL);
+	            Statement sentencia=conexion.createStatement();
+	            String nombre="";
+	            int vida =0;
+	            int energia =0;
+	            String tipo = "";
+	            ResultSet rs = sentencia.executeQuery("SELECT id_habilidad FROM habilidades ORDER BY id_habilidad DESC LIMIT 1");
+	            int id=0;
+	            while(rs.next()) {
+	            	 id=rs.getInt("id_habilidad");
+		            id++;
+	            }
+	            
+	            for(int i=0; i<habilidades.size();i++) {
+	        	   
+	        	  nombre = habilidades.get(i).getNombre();
+	        	  vida = habilidades.get(i).getVida();
+	        	  energia = habilidades.get(i).getEnergia();
+	        	  tipo = habilidades.get(i).getTipo();
+	        	  sentencia.executeUpdate("INSERT INTO habilidades (id_habilidad,nombrehab,energia,vida,tipo) VALUES("+id+",'"+ nombre +"'," + vida + ","+ energia +",'"+tipo+"')");
+	        	  id++;
+	           }
 
-	            //sentencia.setString(1, nombre);
-	           // sentencia.setInt(2, vida);
-	           // sentencia.setInt(3, energia);
-	            //sentencia.setInt(4, vida);
+	          
 
+	            // Cierro todo
+	            sentencia.close();
+	            conexion.close();
 
 	            
 	        } catch (SQLException ex) {
@@ -343,7 +367,7 @@ public class Gestor {
 	        }
 		}
 		
-		public void InsertarBD() {
+		public void LeerBD() {
 			try {
 	            Connection conexion;
 
@@ -352,7 +376,7 @@ public class Gestor {
 	            String port = "3306";
 	            String parAdic = "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	            String urlConnection = "jdbc:mysql://" + host + ":" + port + "/" + basedatos + parAdic;
-	            String user = "abel";
+	            String user = "abellozano";
 	            String pwd = "1234";
 
 	            conexion = DriverManager.getConnection(urlConnection, user, pwd);
@@ -368,7 +392,7 @@ public class Gestor {
 	            SQL += "SELECT p.nombre, p.energia, p.vida, p.tipo ";
 	            SQL += "FROM personaje p";
 	          
-
+	            
 	            // Ejecuto el SQL y devuelvo los datos
 	            ResultSet rs = sentencia.executeQuery(SQL);
 
