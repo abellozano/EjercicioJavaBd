@@ -1838,7 +1838,7 @@ public class Gestor {
 					System.out.println("Posicion: " + i);
 					items.get(i).visualizar();
 				}
-				System.out.println("Introduce posicion de la recompensa, o -1 para una recompensa por defecto");
+				System.out.println("Introduce posicion de la recompensa, o-1 para una recompensa por defecto");
 				posicionrecompensa = teclado.nextInt();
 				teclado.nextLine();
 				
