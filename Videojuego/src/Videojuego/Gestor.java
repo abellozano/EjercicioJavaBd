@@ -322,8 +322,8 @@ public class Gestor {
 	            String port = "3306";
 	            String parAdic = "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	            String urlConnection = "jdbc:mysql://" + host + ":" + port + "/" + basedatos + parAdic;
-	            String user = "abellozano";
-	            String pwd = "1234";
+	            String user = "dennis";
+	            String pwd = "Huayllas1";
 
 	            conexion = DriverManager.getConnection(urlConnection, user, pwd);
 
@@ -353,12 +353,45 @@ public class Gestor {
 	        	  tipo = habilidades.get(i).getTipo();
 	        	  sentencia.executeUpdate("INSERT INTO habilidades (id_habilidad,nombrehab,energia,vida,tipo) VALUES("+id+",'"+ nombre +"'," + vida + ","+ energia +",'"+tipo+"')");
 	        	  id++;
+	        	  
 	           }
-
+	           Statement sentenciaPersonaje=conexion.createStatement();
+	           String nombrePj="";
+	           String clasePj="";
+	           int vida_Max=0;
+	           int vida_Actual=0;
+	           int energia_Max=0;
+	           int energia_Actual=0;
+	           int monedas=0;
+	           boolean hostil=false;
+	           boolean npc=false;
+	           
+	           ResultSet rsPj = sentencia.executeQuery("SELECT id_personaje FROM personajes ORDER BY id_personaje DESC LIMIT 1");
+	            int idPj=0;
+	            while(rsPj.next()) {
+	            	 idPj=rsPj.getInt("id_personaje");
+		            idPj++;
+	            }
+	            for(int i=0;i<personajes.size();i++) {
+	            	
+	            	nombrePj=personajes.get(i).getNombre();
+	            	clasePj=personajes.get(i).getClase();
+	            	vida_Max=personajes.get(i).getVida_max();
+	            	vida_Actual=personajes.get(i).getVida_actual();
+	            	energia_Max=personajes.get(i).getEnergia_max();
+	            	energia_Actual=personajes.get(i).getEnergia_actual();
+	            	monedas=personajes.get(i).getMonedas();
+	            	hostil=personajes.get(i).isHostil();
+	            	npc=personajes.get(i).isNpc();	    
+	            	sentenciaPersonaje.executeUpdate("INSERT INTO personajes(id_personaje,nombre,clase,vida_max,vida_actual,energia_max,energia_actual,monedas,hostil,npc)"+
+	            	"VALUES("+idPj+",'"+nombrePj+"','"+clasePj+"',"+vida_Max+","+vida_Actual+","+energia_Max+","+energia_Actual+","+monedas+","+hostil+","+npc+")");
+	            	idPj++;
+	            }
 	          
 
 	            // Cierro todo
 	            sentencia.close();
+	            sentenciaPersonaje.close();
 	            conexion.close();
 
 	            
