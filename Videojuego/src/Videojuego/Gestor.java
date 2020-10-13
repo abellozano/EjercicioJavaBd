@@ -82,8 +82,9 @@ public class Gestor {
 				System.out.println("Opcion 21: Eliminar Mision");
 				System.out.println("Opcion 22: Guardar en fichero");
 				System.out.println("Opcion 23: Leer fichero");
-				System.out.println("Opcion 24: Leer de la base de datos");
-				System.out.println("Insertar en la base de datos");
+				System.out.println("Opcion 24: Leer Habilidades");
+				System.out.println("Opcion 25  Leer Personajes");
+				System.out.println("Opcion 26  Guardar en la Base de Datos");
 				System.out.println("Opcion 0: Salir");
 				opcion= teclado.nextInt();
 				teclado.nextLine();
@@ -160,9 +161,12 @@ public class Gestor {
 						leerDeFichero();
 						break;
 					case 24:
-						LeerBD();
+						LeerBDHabilidades();
 						break;
 					case 25:
+						LeerBDPersonaje();
+						break;
+					case 26:
 						Insertar();
 						break;
 					case 0:
@@ -400,7 +404,7 @@ public class Gestor {
 	        }
 		}
 		
-		public void LeerBD() {
+		public void LeerBDHabilidades() {
 			try {
 	            Connection conexion;
 
@@ -409,8 +413,8 @@ public class Gestor {
 	            String port = "3306";
 	            String parAdic = "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	            String urlConnection = "jdbc:mysql://" + host + ":" + port + "/" + basedatos + parAdic;
-	            String user = "abellozano";
-	            String pwd = "1234";
+	            String user = "dennis";
+	            String pwd = "Huayllas1";
 
 	            conexion = DriverManager.getConnection(urlConnection, user, pwd);
 
@@ -422,8 +426,8 @@ public class Gestor {
 
 	            // Formo el SQL
 	            String SQL = "";
-	            SQL += "SELECT p.nombre, p.energia, p.vida, p.tipo ";
-	            SQL += "FROM personaje p";
+	            SQL += "SELECT h.id_habilidad, h.nombrehab, h.energia, h.vida, h.tipo ";
+	            SQL += "FROM habilidades h";
 	          
 	            
 	            // Ejecuto el SQL y devuelvo los datos
@@ -433,7 +437,8 @@ public class Gestor {
 	            while (rs.next()) {
 
 	                // Obtengo y muestro los datos de cada atributo
-	                System.out.println("Nombre:" + rs.getString("nombre"));
+	            	System.out.println("|||||||||||||||||||Habilidades "+ rs.getInt("id_habilidad")+"|||||||||||||||||||");
+	                System.out.println("Nombre:" + rs.getString("nombrehab"));
 	                System.out.println("Energia:" + rs.getString("energia"));
 	                System.out.println("Vida:" + rs.getString("vida"));
 	                System.out.println("Tipo:" + rs.getString("tipo"));
@@ -451,7 +456,78 @@ public class Gestor {
 
 	    }
 		
-		
+		public void LeerBDPersonaje() {
+			try {
+	            Connection conexion;
+
+	            String basedatos = "videojuego";
+	            String host = "localhost";
+	            String port = "3306";
+	            String parAdic = "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+	            String urlConnection = "jdbc:mysql://" + host + ":" + port + "/" + basedatos + parAdic;
+	            String user = "dennis";
+	            String pwd = "Huayllas1";
+
+	            conexion = DriverManager.getConnection(urlConnection, user, pwd);
+
+	            // Hace commit automaticamente
+	            conexion.setAutoCommit(true);
+
+	            // Creo la sentencia
+	            Statement sentencia = conexion.createStatement();
+
+	            // Formo el SQL
+	            String SQL = "";
+	            SQL += "SELECT p.id_personaje,p.nombre, p.clase, p.vida_max, p.vida_actual,p.energia_max,p.energia_actual,p.monedas,p.hostil,p.npc ";
+	            SQL += "FROM personajes p";
+	          
+	            
+	            // Ejecuto el SQL y devuelvo los datos
+	            ResultSet rs = sentencia.executeQuery(SQL);
+	            
+	            // Recorro los datos
+	            while (rs.next()) {
+
+	                // Obtengo y muestro los datos de cada atributo
+	            	System.out.println("|||||||||||||||||||Personajes "+ rs.getInt("id_personaje")+"|||||||||||||||||||");
+	                System.out.println("Nombre:" + rs.getString("nombre"));
+	                System.out.println("Clase:" + rs.getString("clase"));
+	                System.out.println("Vida Maxima:" + rs.getInt("vida_max"));
+	                System.out.println("Vida Actual:" + rs.getInt("vida_actual"));
+	                System.out.println("Energia Maxima:" + rs.getInt("energia_max"));
+	                System.out.println("Enrgia Actual:" + rs.getInt("energia_actual"));
+	                System.out.println("Monedas" + rs.getInt("monedas"));
+	                 if(rs.getInt("hostil")==1) {
+	                	 
+	                	  System.out.println("El personaje es hostil");
+	                	 
+	                 }else {
+	                	 System.out.println("El personaje no es hostil");
+	                	 
+	                 }
+	                 
+	                 if(rs.getInt("npc")==1) {
+	                	 
+	                	  System.out.println("El personaje un NPC");
+	                	 
+	                 }else {
+	                	 System.out.println("El personaje no es un NPC");
+	                	 
+	                 }
+	                
+	                System.out.println("");
+	            }
+
+	            // Cierro el resultset, la sentencia y la conexion
+	            rs.close();
+	            sentencia.close();
+	            conexion.close();
+
+	        } catch (SQLException ex) {
+	            System.out.println(ex.getMessage());
+	        }
+
+		}
 	// ----------------------                           HABILIDADES                    ----------------------------------//
 		
 		// AÑADIR una nueva Habilidad
