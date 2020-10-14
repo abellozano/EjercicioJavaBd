@@ -355,8 +355,17 @@ public class Gestor {
 	        	  vida = habilidades.get(i).getVida();
 	        	  energia = habilidades.get(i).getEnergia();
 	        	  tipo = habilidades.get(i).getTipo();
-	        	  sentencia.executeUpdate("INSERT INTO habilidades (id_habilidad,nombrehab,energia,vida,tipo) VALUES("+id+",'"+ nombre +"'," + vida + ","+ energia +",'"+tipo+"')");
-	        	  id++;
+	        	  Habilidad aux= new Habilidad(nombre,vida,energia,tipo);
+	        	  for(int j=0;i<habilidades.size();i++) {
+	        		  
+	        		  if(!(habilidades.get(j).esIgual(aux))) {
+	        			  
+	        			  sentencia.executeUpdate("INSERT INTO habilidades (id_habilidad,nombrehab,energia,vida,tipo) VALUES("+id+",'"+ nombre +"'," + vida + ","+ energia +",'"+tipo+"')");
+	    	        	  id++;
+	        			  
+	        		  }
+	        	  }
+	        	
 	        	  
 	           }
 	           Statement sentenciaPersonaje=conexion.createStatement();
@@ -386,10 +395,19 @@ public class Gestor {
 	            	energia_Actual=personajes.get(i).getEnergia_actual();
 	            	monedas=personajes.get(i).getMonedas();
 	            	hostil=personajes.get(i).isHostil();
-	            	npc=personajes.get(i).isNpc();	    
-	            	sentenciaPersonaje.executeUpdate("INSERT INTO personajes(id_personaje,nombre,clase,vida_max,vida_actual,energia_max,energia_actual,monedas,hostil,npc)"+
-	            	"VALUES("+idPj+",'"+nombrePj+"','"+clasePj+"',"+vida_Max+","+vida_Actual+","+energia_Max+","+energia_Actual+","+monedas+","+hostil+","+npc+")");
-	            	idPj++;
+	            	npc=personajes.get(i).isNpc();
+	            	Habilidad []habaux=new Habilidad[5];
+	            	Item []itemaux=new Item[5];
+	            	Personaje aux=new Personaje(nombrePj,clasePj,vida_Max,energia_Max,vida_Actual,energia_Actual,monedas,habaux,itemaux,hostil,npc);
+	            	
+	            	for(int j=0;i<personajes.size();i++) {
+		        		  
+		        		  if(!(personajes.get(j).esIgual(aux))) {
+		        			  
+			            	sentenciaPersonaje.executeUpdate("INSERT INTO personajes(id_personaje,nombre,clase,vida_max,vida_actual,energia_max,energia_actual,monedas,hostil,npc)"+
+			            	"VALUES("+idPj+",'"+nombrePj+"','"+clasePj+"',"+vida_Max+","+vida_Actual+","+energia_Max+","+energia_Actual+","+monedas+","+hostil+","+npc+")");
+			            	idPj++;}
+	            	}
 	            }
 	          
 
@@ -437,12 +455,12 @@ public class Gestor {
 	            while (rs.next()) {
 
 	                // Obtengo y muestro los datos de cada atributo
-	            	System.out.println("|||||||||||||||||||Habilidades "+ rs.getInt("id_habilidad")+"|||||||||||||||||||");
-	                System.out.println("Nombre:" + rs.getString("nombrehab"));
-	                System.out.println("Energia:" + rs.getString("energia"));
-	                System.out.println("Vida:" + rs.getString("vida"));
-	                System.out.println("Tipo:" + rs.getString("tipo"));
-	                System.out.println("");
+	            	
+	            	Habilidad habaux=new Habilidad(rs.getString("nombrehab"),rs.getInt("vida"),rs.getInt("energia"),rs.getString("tipo"));
+	            
+	            	anyadirHabilidad(habaux);
+	            
+	                
 	            }
 
 	            // Cierro el resultset, la sentencia y la conexion
@@ -484,38 +502,31 @@ public class Gestor {
 	            
 	            // Ejecuto el SQL y devuelvo los datos
 	            ResultSet rs = sentencia.executeQuery(SQL);
-	            
+	            boolean Hostil=false;
+	            boolean Npc=false;
 	            // Recorro los datos
 	            while (rs.next()) {
-
-	                // Obtengo y muestro los datos de cada atributo
-	            	System.out.println("|||||||||||||||||||Personajes "+ rs.getInt("id_personaje")+"|||||||||||||||||||");
-	                System.out.println("Nombre:" + rs.getString("nombre"));
-	                System.out.println("Clase:" + rs.getString("clase"));
-	                System.out.println("Vida Maxima:" + rs.getInt("vida_max"));
-	                System.out.println("Vida Actual:" + rs.getInt("vida_actual"));
-	                System.out.println("Energia Maxima:" + rs.getInt("energia_max"));
-	                System.out.println("Enrgia Actual:" + rs.getInt("energia_actual"));
-	                System.out.println("Monedas" + rs.getInt("monedas"));
-	                 if(rs.getInt("hostil")==1) {
-	                	 
-	                	  System.out.println("El personaje es hostil");
+	            	
+	            	  if(rs.getInt("hostil")==1) {
+		                	 
+	                	  Hostil=false;
 	                	 
 	                 }else {
-	                	 System.out.println("El personaje no es hostil");
-	                	 
+	                	 Hostil=true;
 	                 }
 	                 
 	                 if(rs.getInt("npc")==1) {
 	                	 
-	                	  System.out.println("El personaje un NPC");
+	                	 Npc=false;
 	                	 
 	                 }else {
-	                	 System.out.println("El personaje no es un NPC");
+	                	 Npc=true;
 	                	 
 	                 }
-	                
-	                System.out.println("");
+	            	Habilidad []habaux=new Habilidad[5];
+	            	Item []itemaux=new Item[5];
+	            	Personaje aux=new Personaje(rs.getString("nombre"),rs.getString("clase"),rs.getInt("vida_max"),+ rs.getInt("energia_max"), rs.getInt("vida_actual"),rs.getInt("energia_actual"),rs.getInt("monedas"),habaux,itemaux,Hostil,Npc);
+	            	anyadirPersonaje(aux);
 	            }
 
 	            // Cierro el resultset, la sentencia y la conexion
